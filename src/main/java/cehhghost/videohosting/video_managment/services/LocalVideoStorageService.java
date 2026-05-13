@@ -17,6 +17,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@Deprecated
 public class LocalVideoStorageService {
     @Value("${video.storage.originals-path}")
     private String originalsPath;

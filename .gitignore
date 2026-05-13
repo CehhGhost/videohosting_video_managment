@@ -35,3 +35,5 @@ build/
 
 application.properties
 storage
+
+garage-local
