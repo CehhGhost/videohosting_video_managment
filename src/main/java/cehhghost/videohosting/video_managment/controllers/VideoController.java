@@ -1,41 +1,45 @@
 package cehhghost.videohosting.video_managment.controllers;
 
-import cehhghost.videohosting.video_managment.services.LocalVideoStorageService;
+import cehhghost.videohosting.video_managment.dtos.InitVideoUploadRequestDTO;
+import cehhghost.videohosting.video_managment.dtos.InitVideoUploadResponseDTO;
+import cehhghost.videohosting.video_managment.dtos.VideoResponseDTO;
+import cehhghost.videohosting.video_managment.services.VideoService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.UUID;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/videos")
+@RequestMapping("/api/videos/local")
 public class VideoController {
-    private final LocalVideoStorageService localVideoStorageService;
+    private final VideoService videoService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadVideo(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("title") String title) {
+    @PostMapping("/upload/init")
+    public ResponseEntity<InitVideoUploadResponseDTO> initUpload(
+            @RequestBody InitVideoUploadRequestDTO requestDTO
+    ) {
+        InitVideoUploadResponseDTO responseDTO = videoService.initUpload(requestDTO);
 
-        log.info("Upload request: title={}, file={}, size={}",
-                title, file.getOriginalFilename(), file.getSize());
+        return ResponseEntity.ok(responseDTO);
+    }
 
-        String savedFilename = localVideoStorageService.save(file);
+    @PostMapping("/{videoId}/upload/complete")
+    public ResponseEntity<VideoResponseDTO> completeUpload(
+            @PathVariable UUID videoId
+    ) {
+        VideoResponseDTO responseDTO = videoService.completeUpload(videoId);
 
-        Map<String, String> response = Map.of(
-                "status", "UPLOADED",
-                "filename", savedFilename,
-                "title", title
-        );
+        return ResponseEntity.ok(responseDTO);
+    }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    @GetMapping("/{videoId}")
+    public ResponseEntity<VideoResponseDTO> getVideo(
+            @PathVariable UUID videoId
+    ) {
+        VideoResponseDTO responseDTO = videoService.getVideo(videoId);
+
+        return ResponseEntity.ok(responseDTO);
     }
 }
