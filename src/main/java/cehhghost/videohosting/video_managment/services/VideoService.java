@@ -4,6 +4,9 @@ import cehhghost.videohosting.video_managment.dtos.InitVideoUploadRequestDTO;
 import cehhghost.videohosting.video_managment.dtos.InitVideoUploadResponseDTO;
 import cehhghost.videohosting.video_managment.dtos.VideoResponseDTO;
 import cehhghost.videohosting.video_managment.enums.VideoStatus;
+import cehhghost.videohosting.video_managment.exceptions.InvalidVideoStatusException;
+import cehhghost.videohosting.video_managment.exceptions.VideoNotFoundException;
+import cehhghost.videohosting.video_managment.exceptions.VideoUploadNotCompletedException;
 import cehhghost.videohosting.video_managment.models.Video;
 import cehhghost.videohosting.video_managment.repositories.VideoRepository;
 import cehhghost.videohosting.video_managment.storages.PresignedUploadUrl;
@@ -75,14 +78,14 @@ public class VideoService {
     @Transactional
     public VideoResponseDTO completeUpload(UUID videoId) {
         Video video = videoRepository.findById(videoId)
-                .orElseThrow(() -> new IllegalArgumentException("Video not found: " + videoId));
+                .orElseThrow(() -> new VideoNotFoundException(videoId));
 
         if (video.getStatus() != VideoStatus.PENDING_UPLOAD) {
-            throw new IllegalStateException("Video upload is not pending");
+            throw new InvalidVideoStatusException(video.getStatus(), VideoStatus.PENDING_UPLOAD);
         }
 
         if (!objectStorageService.objectExists(video.getObjectKey())) {
-            throw new IllegalStateException("Uploaded object was not found in object storage");
+            throw new VideoUploadNotCompletedException(videoId);
         }
 
         video.setStatus(VideoStatus.UPLOADED);
@@ -93,7 +96,7 @@ public class VideoService {
     @Transactional(readOnly = true)
     public VideoResponseDTO getVideo(UUID videoId) {
         Video video = videoRepository.findById(videoId)
-                .orElseThrow(() -> new IllegalArgumentException("Video not found: " + videoId));
+                .orElseThrow(() -> new VideoNotFoundException(videoId));
 
         return modelMapper.map(video, VideoResponseDTO.class);
     }

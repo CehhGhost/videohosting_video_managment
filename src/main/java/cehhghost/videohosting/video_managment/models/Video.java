@@ -20,8 +20,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Video {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 
     @Column(nullable = false)
     private String title;

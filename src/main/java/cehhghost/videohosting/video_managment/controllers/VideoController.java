@@ -4,6 +4,7 @@ import cehhghost.videohosting.video_managment.dtos.InitVideoUploadRequestDTO;
 import cehhghost.videohosting.video_managment.dtos.InitVideoUploadResponseDTO;
 import cehhghost.videohosting.video_managment.dtos.VideoResponseDTO;
 import cehhghost.videohosting.video_managment.services.VideoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +13,13 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/videos/local")
+@RequestMapping("/api/videos")
 public class VideoController {
     private final VideoService videoService;
 
     @PostMapping("/upload/init")
     public ResponseEntity<InitVideoUploadResponseDTO> initUpload(
-            @RequestBody InitVideoUploadRequestDTO requestDTO
+            @Valid @RequestBody InitVideoUploadRequestDTO requestDTO
     ) {
         InitVideoUploadResponseDTO responseDTO = videoService.initUpload(requestDTO);
 
