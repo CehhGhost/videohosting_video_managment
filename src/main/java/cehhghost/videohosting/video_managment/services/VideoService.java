@@ -4,6 +4,7 @@ import cehhghost.videohosting.video_managment.dtos.InitVideoUploadRequestDTO;
 import cehhghost.videohosting.video_managment.dtos.InitVideoUploadResponseDTO;
 import cehhghost.videohosting.video_managment.dtos.VideoResponseDTO;
 import cehhghost.videohosting.video_managment.enums.VideoStatus;
+import cehhghost.videohosting.video_managment.events.VideoUploadedApplicationEvent;
 import cehhghost.videohosting.video_managment.exceptions.InvalidVideoStatusException;
 import cehhghost.videohosting.video_managment.exceptions.VideoNotFoundException;
 import cehhghost.videohosting.video_managment.exceptions.VideoUploadNotCompletedException;
@@ -12,6 +13,7 @@ import cehhghost.videohosting.video_managment.repositories.VideoRepository;
 import cehhghost.videohosting.video_managment.storages.PresignedUploadUrl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +27,9 @@ public class VideoService {
     private static final String ORIGINALS_PREFIX = "videos/originals/";
 
     private final VideoRepository videoRepository;
-
     private final ObjectStorageService objectStorageService;
-
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public InitVideoUploadResponseDTO initUpload(InitVideoUploadRequestDTO requestDTO) {
@@ -89,6 +90,15 @@ public class VideoService {
         }
 
         video.setStatus(VideoStatus.UPLOADED);
+
+        applicationEventPublisher.publishEvent(
+                new VideoUploadedApplicationEvent(
+                        video.getId(),
+                        video.getObjectKey(),
+                        video.getContentType(),
+                        video.getOriginalSizeBytes()
+                )
+        );
 
         return modelMapper.map(video, VideoResponseDTO.class);
     }
