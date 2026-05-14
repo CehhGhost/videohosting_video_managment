@@ -1,6 +1,6 @@
 package cehhghost.videohosting.video_managment.models;
 
-import cehhghost.videohosting.video_managment.enums.VideoStatus;
+import cehhghost.videohosting.video_managment.enums.UploadStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +13,12 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name="_videos")
+@Table(name="_video_storage_objects")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Video {
+public class VideoStorageObject {
     @Id
     private UUID id;
 
@@ -26,11 +26,8 @@ public class Video {
     @Column(name = "version")
     private Long version;
 
-    @Column(nullable = false)
-    private String title;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
+    @Column(name = "video_id", nullable = false, unique = true)
+    private UUID videoId;
 
     @Column(name = "original_filename", nullable = false)
     private String originalFilename;
@@ -45,8 +42,8 @@ public class Video {
     private String contentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private VideoStatus status;
+    @Column(name = "upload_status", nullable = false)
+    private UploadStatus uploadStatus;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
