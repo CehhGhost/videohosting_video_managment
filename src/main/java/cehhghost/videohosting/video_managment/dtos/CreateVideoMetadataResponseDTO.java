@@ -1,22 +1,17 @@
 package cehhghost.videohosting.video_managment.dtos;
 
-import cehhghost.videohosting.video_managment.enums.UploadStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InitVideoUploadResponseDTO {
+public class CreateVideoMetadataResponseDTO {
     private UUID videoId;
-    private UploadStatus uploadStatus;
-    private String objectKey;
-    private String uploadUrl;
-    private Instant expiresAt;
+    private String status;
 }

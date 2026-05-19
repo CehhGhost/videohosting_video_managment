@@ -1,8 +1,8 @@
 package cehhghost.videohosting.video_managment.handlers;
 
 import cehhghost.videohosting.video_managment.dtos.ErrorResponseDTO;
-import cehhghost.videohosting.video_managment.exceptions.InvalidVideoStatusException;
-import cehhghost.videohosting.video_managment.exceptions.VideoNotFoundException;
+import cehhghost.videohosting.video_managment.exceptions.InvalidUploadStatusException;
+import cehhghost.videohosting.video_managment.exceptions.VideoStorageObjectNotFoundException;
 import cehhghost.videohosting.video_managment.exceptions.VideoUploadNotCompletedException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(VideoNotFoundException.class)
+    @ExceptionHandler(VideoStorageObjectNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleVideoNotFoundException(
-            VideoNotFoundException exception,
+            VideoStorageObjectNotFoundException exception,
             HttpServletRequest request
     ) {
         ErrorResponseDTO responseDTO = buildErrorResponseDTO(
@@ -44,9 +44,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDTO);
     }
 
-    @ExceptionHandler(InvalidVideoStatusException.class)
+    @ExceptionHandler(InvalidUploadStatusException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidVideoStatusException(
-            InvalidVideoStatusException exception,
+            InvalidUploadStatusException exception,
             HttpServletRequest request
     ) {
         ErrorResponseDTO responseDTO = buildErrorResponseDTO(
@@ -96,6 +96,10 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining("; "));
+
+        if (message.isBlank()) {
+            message = "Validation error";
+        }
 
         ErrorResponseDTO responseDTO = buildErrorResponseDTO(
                 HttpStatus.BAD_REQUEST,

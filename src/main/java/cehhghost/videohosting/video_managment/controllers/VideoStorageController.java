@@ -2,8 +2,8 @@ package cehhghost.videohosting.video_managment.controllers;
 
 import cehhghost.videohosting.video_managment.dtos.InitVideoUploadRequestDTO;
 import cehhghost.videohosting.video_managment.dtos.InitVideoUploadResponseDTO;
-import cehhghost.videohosting.video_managment.dtos.VideoResponseDTO;
-import cehhghost.videohosting.video_managment.services.VideoService;
+import cehhghost.videohosting.video_managment.dtos.VideoStorageObjectResponseDTO;
+import cehhghost.videohosting.video_managment.services.VideoStorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,33 +13,33 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/videos")
-public class VideoController {
-    private final VideoService videoService;
+@RequestMapping("/api/video-storage/videos")
+public class VideoStorageController {
+    private final VideoStorageService videoStorageService;
 
     @PostMapping("/upload/init")
     public ResponseEntity<InitVideoUploadResponseDTO> initUpload(
             @Valid @RequestBody InitVideoUploadRequestDTO requestDTO
     ) {
-        InitVideoUploadResponseDTO responseDTO = videoService.initUpload(requestDTO);
+        InitVideoUploadResponseDTO responseDTO = videoStorageService.initUpload(requestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping("/{videoId}/upload/complete")
-    public ResponseEntity<VideoResponseDTO> completeUpload(
+    public ResponseEntity<VideoStorageObjectResponseDTO> completeUpload(
             @PathVariable UUID videoId
     ) {
-        VideoResponseDTO responseDTO = videoService.completeUpload(videoId);
+        VideoStorageObjectResponseDTO responseDTO = videoStorageService.completeUpload(videoId);
 
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/{videoId}")
-    public ResponseEntity<VideoResponseDTO> getVideo(
+    @GetMapping("/{videoId}/storage-object")
+    public ResponseEntity<VideoStorageObjectResponseDTO> getVideo(
             @PathVariable UUID videoId
     ) {
-        VideoResponseDTO responseDTO = videoService.getVideo(videoId);
+        VideoStorageObjectResponseDTO responseDTO = videoStorageService.getVideo(videoId);
 
         return ResponseEntity.ok(responseDTO);
     }
