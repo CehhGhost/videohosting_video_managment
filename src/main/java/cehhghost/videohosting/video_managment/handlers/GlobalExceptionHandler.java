@@ -97,6 +97,10 @@ public class GlobalExceptionHandler {
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining("; "));
 
+        if (message.isBlank()) {
+            message = "Validation error";
+        }
+
         ErrorResponseDTO responseDTO = buildErrorResponseDTO(
                 HttpStatus.BAD_REQUEST,
                 message,

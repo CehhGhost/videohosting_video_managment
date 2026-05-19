@@ -1,4 +1,4 @@
-package cehhghost.videohosting.video_managment.dtos;
+package cehhghost.videohosting.video_managment.dtos.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

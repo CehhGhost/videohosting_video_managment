@@ -1,7 +1,7 @@
 package cehhghost.videohosting.video_managment.events.producers;
 
 import cehhghost.videohosting.video_managment.configs.KafkaTopicProperties;
-import cehhghost.videohosting.video_managment.dtos.VideoUploadedEventDTO;
+import cehhghost.videohosting.video_managment.dtos.events.VideoUploadedEventDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

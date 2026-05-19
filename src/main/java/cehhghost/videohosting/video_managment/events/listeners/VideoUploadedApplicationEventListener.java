@@ -1,6 +1,6 @@
 package cehhghost.videohosting.video_managment.events.listeners;
 
-import cehhghost.videohosting.video_managment.dtos.VideoUploadedEventDTO;
+import cehhghost.videohosting.video_managment.dtos.events.VideoUploadedEventDTO;
 import cehhghost.videohosting.video_managment.events.VideoUploadedApplicationEvent;
 import cehhghost.videohosting.video_managment.events.producers.VideoEventProducer;
 import lombok.RequiredArgsConstructor;

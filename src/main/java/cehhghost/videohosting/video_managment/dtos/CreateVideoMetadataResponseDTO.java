@@ -13,4 +13,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateVideoMetadataResponseDTO {
     private UUID videoId;
+    private String status;
 }

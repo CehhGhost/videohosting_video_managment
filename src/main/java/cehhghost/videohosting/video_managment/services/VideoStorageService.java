@@ -79,7 +79,7 @@ public class VideoStorageService {
         );
 
         return InitVideoUploadResponseDTO.builder()
-                .videoId(videoStorageObject.getId())
+                .videoId(videoStorageObject.getVideoId())
                 .uploadStatus(videoStorageObject.getUploadStatus())
                 .objectKey(videoStorageObject.getObjectKey())
                 .uploadUrl(presignedUploadUrl.getUrl())
@@ -103,7 +103,7 @@ public class VideoStorageService {
 
         applicationEventPublisher.publishEvent(
                 new VideoUploadedApplicationEvent(
-                        videoStorageObject.getId(),
+                        videoStorageObject.getVideoId(),
                         videoStorageObject.getObjectKey(),
                         videoStorageObject.getContentType(),
                         videoStorageObject.getOriginalSizeBytes()
