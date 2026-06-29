@@ -55,6 +55,8 @@ public class VideoStorageService {
                                 .description(description)
                                 .ownerId(ownerId)
                                 .visibility(requestDTO.getVisibility())
+                                .category(requestDTO.getCategory())
+                                .tags(requestDTO.getTags())
                                 .build()
                 );
 

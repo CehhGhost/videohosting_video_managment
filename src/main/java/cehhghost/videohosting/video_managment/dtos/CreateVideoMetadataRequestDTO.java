@@ -1,11 +1,13 @@
 package cehhghost.videohosting.video_managment.dtos;
 
+import cehhghost.videohosting.video_managment.enums.VideoCategory;
 import cehhghost.videohosting.video_managment.enums.VideoVisibility;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -17,4 +19,6 @@ public class CreateVideoMetadataRequestDTO {
     private String description;
     private UUID ownerId;
     private VideoVisibility visibility;
+    private VideoCategory category;
+    private Set<String> tags;
 }

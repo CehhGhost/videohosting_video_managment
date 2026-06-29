@@ -1,14 +1,15 @@
 package cehhghost.videohosting.video_managment.dtos;
 
+import cehhghost.videohosting.video_managment.enums.VideoCategory;
 import cehhghost.videohosting.video_managment.enums.VideoVisibility;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -33,4 +34,11 @@ public class InitVideoUploadRequestDTO {
 
     @NotNull(message = "Video visibility is required")
     private VideoVisibility visibility;
+
+    @Builder.Default
+    private VideoCategory category = VideoCategory.OTHER;
+
+    @Size(max = 20, message = "Video must not have more than 20 tags")
+    @Builder.Default
+    private Set<@Size(max = 64, message = "Tag must not exceed 64 characters") String> tags = new LinkedHashSet<>();
 }
