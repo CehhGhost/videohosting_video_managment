@@ -9,12 +9,15 @@ import cehhghost.videohosting.video_managment.exceptions.VideoStorageObjectNotFo
 import cehhghost.videohosting.video_managment.exceptions.VideoUploadNotCompletedException;
 import cehhghost.videohosting.video_managment.models.VideoStorageObject;
 import cehhghost.videohosting.video_managment.repositories.VideoStorageObjectRepository;
+import cehhghost.videohosting.video_managment.storages.PresignedDownloadUrl;
 import cehhghost.videohosting.video_managment.storages.PresignedUploadUrl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -32,13 +35,14 @@ public class VideoStorageService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
-    public InitVideoUploadResponseDTO initUpload(InitVideoUploadRequestDTO requestDTO) {
+    public InitVideoUploadResponseDTO initUpload(UUID ownerId, InitVideoUploadRequestDTO requestDTO) {
         String title = requestDTO.getTitle().trim();
 
         String description = requestDTO.getDescription();
 
         if (description != null) {
             description = description.trim();
+
             if (description.isBlank()) {
                 description = null;
             }
@@ -49,6 +53,8 @@ public class VideoStorageService {
                         CreateVideoMetadataRequestDTO.builder()
                                 .title(title)
                                 .description(description)
+                                .ownerId(ownerId)
+                                .visibility(requestDTO.getVisibility())
                                 .build()
                 );
 
@@ -59,11 +65,10 @@ public class VideoStorageService {
 
         String objectKey = this.buildObjectKey(videoId, normalizedOriginalFilename);
 
-
-
         VideoStorageObject videoStorageObject = VideoStorageObject.builder()
                 .id(UUID.randomUUID())
                 .videoId(videoId)
+                .ownerId(ownerId)
                 .originalFilename(normalizedOriginalFilename)
                 .objectKey(objectKey)
                 .originalSizeBytes(requestDTO.getSizeBytes())
@@ -88,8 +93,10 @@ public class VideoStorageService {
     }
 
     @Transactional
-    public VideoStorageObjectResponseDTO completeUpload(UUID videoId) {
+    public VideoStorageObjectResponseDTO completeUpload(UUID ownerId, UUID videoId) {
         VideoStorageObject videoStorageObject = this.getStorageObjectEntity(videoId);
+
+        this.validateOwner(videoStorageObject, ownerId);
 
         if (videoStorageObject.getUploadStatus() != UploadStatus.PENDING_UPLOAD) {
             throw new InvalidUploadStatusException(videoStorageObject.getUploadStatus(), UploadStatus.PENDING_UPLOAD);
@@ -114,10 +121,33 @@ public class VideoStorageService {
     }
 
     @Transactional(readOnly = true)
-    public VideoStorageObjectResponseDTO getVideo(UUID videoId) {
-        VideoStorageObject videoStorageObject = getStorageObjectEntity(videoId);
+    public VideoStorageObjectResponseDTO getVideo(UUID ownerId, UUID videoId) {
+        VideoStorageObject videoStorageObject = this.getStorageObjectEntity(videoId);
+
+        this.validateOwner(videoStorageObject, ownerId);
 
         return modelMapper.map(videoStorageObject, VideoStorageObjectResponseDTO.class);
+    }
+
+    @Transactional(readOnly = true)
+    public VideoPlaybackUrlResponseDTO createPlaybackUrl(UUID videoId) {
+        VideoStorageObject videoStorageObject = this.getStorageObjectEntity(videoId);
+
+        if (videoStorageObject.getUploadStatus() != UploadStatus.UPLOADED) {
+            throw new VideoUploadNotCompletedException(videoId);
+        }
+
+        PresignedDownloadUrl presignedDownloadUrl = objectStorageService.createPresignedDownloadUrl(
+                videoStorageObject.getObjectKey()
+        );
+
+        return VideoPlaybackUrlResponseDTO.builder()
+                .videoId(videoStorageObject.getVideoId())
+                .objectKey(videoStorageObject.getObjectKey())
+                .playbackUrl(presignedDownloadUrl.getUrl())
+                .contentType(videoStorageObject.getContentType())
+                .expiresAt(presignedDownloadUrl.getExpiresAt())
+                .build();
     }
 
     private String buildObjectKey(UUID videoId, String originalFilename) {
@@ -140,5 +170,26 @@ public class VideoStorageService {
         }
 
         return filename.substring(lastDotIndex).toLowerCase(Locale.ROOT);
+    }
+
+    public UUID parseUserId(String subject) {
+        try {
+            return UUID.fromString(subject);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid token subject",
+                    exception
+            );
+        }
+    }
+
+    private void validateOwner(VideoStorageObject videoStorageObject, UUID ownerId) {
+        if (!videoStorageObject.getOwnerId().equals(ownerId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You do not have access to this video storage object"
+            );
+        }
     }
 }

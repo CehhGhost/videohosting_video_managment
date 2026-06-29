@@ -1,5 +1,6 @@
 package cehhghost.videohosting.video_managment.services;
 
+import cehhghost.videohosting.video_managment.storages.PresignedDownloadUrl;
 import cehhghost.videohosting.video_managment.storages.PresignedUploadUrl;
 
 public interface ObjectStorageService {
@@ -7,6 +8,8 @@ public interface ObjectStorageService {
             String objectKey,
             String contentType
     );
+
+    PresignedDownloadUrl createPresignedDownloadUrl(String objectKey);
 
     boolean objectExists(String objectKey);
 }

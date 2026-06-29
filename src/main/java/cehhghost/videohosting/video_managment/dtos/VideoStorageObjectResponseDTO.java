@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class VideoStorageObjectResponseDTO {
     private UUID videoId;
+    private UUID ownerId;
     private String originalFilename;
     private String objectKey;
     private Long originalSizeBytes;

@@ -1,5 +1,6 @@
 package cehhghost.videohosting.video_managment.dtos;
 
+import cehhghost.videohosting.video_managment.enums.VideoVisibility;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -29,4 +30,7 @@ public class InitVideoUploadRequestDTO {
     @NotNull(message = "Video size is required")
     @Positive(message = "Video size must be positive")
     private Long sizeBytes;
+
+    @NotNull(message = "Video visibility is required")
+    private VideoVisibility visibility;
 }

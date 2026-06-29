@@ -1,15 +1,15 @@
 package cehhghost.videohosting.video_managment.services;
 
 import cehhghost.videohosting.video_managment.configs.S3StorageProperties;
+import cehhghost.videohosting.video_managment.storages.PresignedDownloadUrl;
 import cehhghost.videohosting.video_managment.storages.PresignedUploadUrl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -44,6 +44,28 @@ public class GarageObjectStorageService implements ObjectStorageService {
         PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
 
         return PresignedUploadUrl.builder()
+                .url(presignedRequest.url().toString())
+                .expiresAt(Instant.now().plus(expiration))
+                .build();
+    }
+
+    @Override
+    public PresignedDownloadUrl createPresignedDownloadUrl(String objectKey) {
+        Duration expiration = Duration.ofMinutes(properties.getPresignedUrlExpirationMinutes());
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(properties.getBucket())
+                .key(objectKey)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(expiration)
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+
+        return PresignedDownloadUrl.builder()
                 .url(presignedRequest.url().toString())
                 .expiresAt(Instant.now().plus(expiration))
                 .build();

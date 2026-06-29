@@ -7,6 +7,8 @@ import cehhghost.videohosting.video_managment.services.VideoStorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -18,28 +20,28 @@ public class VideoStorageController {
     private final VideoStorageService videoStorageService;
 
     @PostMapping("/upload/init")
-    public ResponseEntity<InitVideoUploadResponseDTO> initUpload(
-            @Valid @RequestBody InitVideoUploadRequestDTO requestDTO
-    ) {
-        InitVideoUploadResponseDTO responseDTO = videoStorageService.initUpload(requestDTO);
+    public ResponseEntity<InitVideoUploadResponseDTO> initUpload(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody InitVideoUploadRequestDTO requestDTO) {
+        UUID ownerId = videoStorageService.parseUserId(jwt.getSubject());
+
+        InitVideoUploadResponseDTO responseDTO = videoStorageService.initUpload(ownerId, requestDTO);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping("/{videoId}/upload/complete")
-    public ResponseEntity<VideoStorageObjectResponseDTO> completeUpload(
-            @PathVariable UUID videoId
-    ) {
-        VideoStorageObjectResponseDTO responseDTO = videoStorageService.completeUpload(videoId);
+    public ResponseEntity<VideoStorageObjectResponseDTO> completeUpload(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID videoId) {
+        UUID ownerId = videoStorageService.parseUserId(jwt.getSubject());
+
+        VideoStorageObjectResponseDTO responseDTO = videoStorageService.completeUpload(ownerId, videoId);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/{videoId}/storage-object")
-    public ResponseEntity<VideoStorageObjectResponseDTO> getVideo(
-            @PathVariable UUID videoId
-    ) {
-        VideoStorageObjectResponseDTO responseDTO = videoStorageService.getVideo(videoId);
+    public ResponseEntity<VideoStorageObjectResponseDTO> getVideo(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID videoId) {
+        UUID ownerId = videoStorageService.parseUserId(jwt.getSubject());
+
+        VideoStorageObjectResponseDTO responseDTO = videoStorageService.getVideo(ownerId, videoId);
 
         return ResponseEntity.ok(responseDTO);
     }

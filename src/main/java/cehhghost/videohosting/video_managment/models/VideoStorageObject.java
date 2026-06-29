@@ -45,6 +45,9 @@ public class VideoStorageObject {
     @Column(name = "upload_status", nullable = false)
     private UploadStatus uploadStatus;
 
+    @Column(name = "owner_id", nullable = false)
+    private UUID ownerId;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

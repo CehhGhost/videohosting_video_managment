@@ -6,10 +6,12 @@ import cehhghost.videohosting.video_managment.exceptions.VideoStorageObjectNotFo
 import cehhghost.videohosting.video_managment.exceptions.VideoUploadNotCompletedException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -108,5 +110,29 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResponseStatusException(ResponseStatusException exception, HttpServletRequest request) {
+        HttpStatusCode statusCode = exception.getStatusCode();
+        HttpStatus httpStatus = HttpStatus.resolve(statusCode.value());
+
+        String error = httpStatus != null
+                ? httpStatus.getReasonPhrase()
+                : "HTTP " + statusCode.value();
+
+        String message = exception.getReason() != null
+                ? exception.getReason()
+                : error;
+
+        ErrorResponseDTO responseDTO = ErrorResponseDTO.builder()
+                .timestamp(Instant.now())
+                .status(statusCode.value())
+                .error(error)
+                .message(message)
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(statusCode).body(responseDTO);
     }
 }
