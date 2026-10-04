@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 810 860" width="810" height="860" font-family="Segoe UI, Arial, sans-serif" font-size="14">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#44506a"/>
+    </marker>
+    <marker id="arrw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#b5761a"/>
+    </marker>
+  </defs>
+
+  <rect width="810" height="860" fill="#ffffff"/>
+
+  <!-- phase brackets -->
+  <g stroke="#9aa5bb" stroke-width="2" fill="none">
+    <path d="M133 20 H125 V448 H133"/>
+    <path d="M133 476 H125 V828 H133"/>
+  </g>
+  <g fill="#5b6781" font-size="13" text-anchor="middle">
+    <text transform="translate(108 234) rotate(-90)">Контрольная точка 1: перед слиянием</text>
+    <text transform="translate(108 652) rotate(-90)">Контрольная точка 2: перед выпуском</text>
+  </g>
+
+  <!-- main flow arrows -->
+  <g stroke="#44506a" stroke-width="1.6" fill="none" marker-end="url(#arr)">
+    <path d="M310 68 V95"/>
+    <path d="M310 144 V171"/>
+    <path d="M310 220 V247"/>
+    <path d="M310 296 V323"/>
+    <path d="M310 372 V399"/>
+    <path d="M310 448 V475"/>
+    <path d="M310 524 V551"/>
+    <path d="M310 600 V627"/>
+    <path d="M310 676 V703"/>
+    <path d="M310 752 V779"/>
+  </g>
+
+  <!-- side (return) arrows -->
+  <g stroke="#b5761a" stroke-width="1.6" fill="none" marker-end="url(#arrw)">
+    <path d="M470 262 H569"/>
+    <path d="M570 284 H471"/>
+    <path d="M470 348 H569"/>
+    <path d="M760 348 H785 V196 H471"/>
+    <path d="M470 652 H569"/>
+    <path d="M665 628 V576 H471" stroke-dasharray="5 4"/>
+  </g>
+  <g fill="#8a5a12" font-size="11.5" text-anchor="middle">
+    <text x="520" y="256">замечания</text>
+    <text x="520" y="300">повторное ревью</text>
+    <text x="520" y="329">проверка</text>
+    <text x="520" y="342">не пройдена</text>
+    <text x="628" y="190">возврат к реализации</text>
+    <text x="520" y="633">недостаточно</text>
+    <text x="520" y="646">оснований</text>
+    <text x="565" y="570">после получения недостающего</text>
+  </g>
+
+  <!-- main nodes -->
+  <g fill="#f4f6fa" stroke="#5b6b8a" stroke-width="1.4">
+    <rect x="150" y="20" width="320" height="48" rx="24"/>
+    <rect x="150" y="96" width="320" height="48" rx="6"/>
+    <rect x="150" y="172" width="320" height="48" rx="6"/>
+    <rect x="150" y="248" width="320" height="48" rx="6"/>
+    <rect x="150" y="324" width="320" height="48" rx="6"/>
+    <rect x="150" y="476" width="320" height="48" rx="6"/>
+    <rect x="150" y="552" width="320" height="48" rx="6"/>
+    <rect x="150" y="628" width="320" height="48" rx="6"/>
+  </g>
+  <!-- decision points -->
+  <g fill="#e3ecff" stroke="#2f5bd0" stroke-width="2">
+    <rect x="150" y="400" width="320" height="48" rx="6"/>
+    <rect x="150" y="704" width="320" height="48" rx="6"/>
+  </g>
+  <!-- release -->
+  <rect x="150" y="780" width="320" height="48" rx="24" fill="#e2f5e6" stroke="#2e8b4a" stroke-width="2"/>
+
+  <!-- side nodes -->
+  <g fill="#fff4e0" stroke="#c98a1b" stroke-width="1.4">
+    <rect x="570" y="248" width="190" height="48" rx="6"/>
+    <rect x="570" y="324" width="190" height="48" rx="6"/>
+  </g>
+  <rect x="570" y="628" width="190" height="48" rx="6" fill="#fde8e8" stroke="#c24545" stroke-width="1.4"/>
+
+  <!-- labels -->
+  <g fill="#1c2433" text-anchor="middle">
+    <text x="310" y="49">Задача / изменение</text>
+    <text x="310" y="125">Определить затронутое свойство и риск</text>
+    <text x="310" y="201">Реализация автором</text>
+    <text x="310" y="277">Ревью вторым участником</text>
+    <text x="310" y="353">Обычные тесты + проверки свойства</text>
+    <text x="310" y="429" font-weight="600">Слияние изменения</text>
+    <text x="310" y="505">Формирование release candidate</text>
+    <text x="310" y="572">Повторные обязательные проверки</text>
+    <text x="310" y="590">для конкретного commit</text>
+    <text x="310" y="657">Комплект оснований для выпуска</text>
+    <text x="310" y="733" font-weight="600">Совместное решение двух участников</text>
+    <text x="310" y="809" font-weight="600">Выпуск v1.0.1</text>
+    <text x="665" y="277">Доработка</text>
+    <text x="665" y="353">Исправление / уточнение</text>
+    <text x="665" y="657">Выпуск отложен</text>
+  </g>
+</svg>
